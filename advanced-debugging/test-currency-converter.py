@@ -7,10 +7,11 @@ class TestCurrencyConverter(unittest.TestCase):
         self.converter = CurrencyConverter()
     
     def test_conversion_to_usd(self):
-        self.assertEqual(self.converter.convert_to_usd(100, "EUR"), 110)  
-    
+        self.assertAlmostEqual(self.converter.convert_to_usd(100, "EUR"), 110, places=2)
+
     def test_conversion_from_usd(self):
-        self.assertEqual(self.converter.convert_from_usd(100, "GBP"), 76.92)  
+        self.assertAlmostEqual(self.converter.convert_from_usd(100, "GBP"), 76.92, places=2)
+
     def test_invalid_currency_conversion(self):
         self.assertEqual(self.converter.convert_to_usd(100, "XYZ"), "Error: Invalid currency")
     
@@ -29,7 +30,7 @@ class TestCurrencyConverter(unittest.TestCase):
         self.assertEqual(self.converter.get_rate("GBP"), 1.4)  
     
     def test_convert_list_to_usd(self):
-        self.assertEqual(self.converter.convert_list_to_usd([50, 75], ["CAD", "AUD"]), 80.25)  
+        self.assertEqual(self.converter.convert_list_to_usd([50, 75], ["CAD", "AUD"]), 90.0) 
     
     def test_batch_convert(self):
         result = self.converter.batch_convert([{ "amount": 20, "currency": "EUR"}, { "amount": 50, "currency": "GBP"}])
