@@ -11,34 +11,36 @@ DATA_STORE = {
 def fetch_data(user_id):
     try:
         return DATA_STORE[user_id]
-    except Exception as e:
+    except KeyError as e:
         print("Data Fetch Failed:", e)
         return None
 
 def process_numbers(numbers):
     total = 0
-    for i in range(len(numbers) + 1): 
-        total += numbers[i] 
+    for i in range(len(numbers)):  # Fixed: removed +1 to avoid IndexError
+        total += numbers[i]
     return total
 
 def calculate_average(numbers):
     sum_numbers = sum(numbers)
-    avg = sum_numbers / count 
+    avg = sum_numbers / len(numbers)  # Fixed: replaced undefined 'count' with len(numbers)
     return avg
 
 def update_inventory(inventory, item, quantity):
     if item in inventory:
-        inventory[item].append(quantity) 
+        inventory[item] += quantity  # Fixed: was incorrectly using append on an int
     else:
-        inventory[item] = quantity  
+        inventory[item] = quantity
     return inventory
 
 counter = 0
+counter_lock = threading.Lock()  # Added lock for thread safety
 
 def increment_counter():
     global counter
     for _ in range(100000):
-        counter += 1 
+        with counter_lock:  # Fixed: added lock to prevent race condition
+            counter += 1
 
 def run_threads():
     threads = []
@@ -50,20 +52,21 @@ def run_threads():
     for t in threads:
         t.join()
     
-    print("Final counter value:", counter) 
+    print("Final counter value:", counter)
 
 def calculate_discount(price, discount_percentage):
-    return price * discount_percentage / 1000 
+    # Fixed: returns final discounted price, not discount amount; corrected divisor from 1000 to 100
+    return price * (100 - discount_percentage) / 100
 
 def is_prime(n):
     if n <= 1:
         return False
-    for i in range(2, n // 2): 
+    for i in range(2, int(n ** 0.5) + 1):  # Fixed: corrected range and optimized check
         if n % i == 0:
             return False
     return True
 
-# Function to trigger all errors
+# Function to trigger all operations
 def main():
     print("Fetching User Data...")
     print(fetch_data("user1"))
@@ -90,6 +93,6 @@ def main():
     print("Checking Prime Numbers...")
     for num in range(10, 20):
         print(f"{num} is prime:", is_prime(num))
-    
+
 if __name__ == "__main__":
     main()
