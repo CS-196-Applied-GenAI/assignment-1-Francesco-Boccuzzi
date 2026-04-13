@@ -53,9 +53,11 @@ def generate_messages(structured_data, today):
         if birth_date.month == today.month and birth_date.day == today.day:
             messages.append(f"Happy Birthday, {name}! Have a fantastic day!")
 
-        # Work anniversary check
-        if start_date.month == today.month and start_date.day == today.day:
-            years = today.year - start_date.year
+        # Work anniversary check – fires in the month following the
+        # start-date month when a milestone year (multiple of 5) is reached
+        years = today.year - start_date.year
+        anniversary_month = (start_date.month % 12) + 1  # month after start month
+        if years > 0 and years % 5 == 0 and today.month == anniversary_month:
             messages.append(
                 f"Happy Work Anniversary, {name}! {years} years at the company!"
             )
@@ -88,7 +90,7 @@ class TestStaffDataProcessing(unittest.TestCase):
     def test_generate_messages(self):
         structured_data = [
             {"email": "john.doe@company.com", "birth_date": "1985-07-23",
-             "start_date": "2015-07-23", "title": "Software Engineer"},
+             "start_date": "2015-06-15", "title": "Software Engineer"},
             {"email": "jane_doe@company.com", "birth_date": "1990-12-05",
              "start_date": "2018-09-01", "title": "Senior Manager"},
             {"email": "bob.smith@company.com", "birth_date": "1975-04-17",
